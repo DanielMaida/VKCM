@@ -26,11 +26,11 @@ for j=1:p;
            k = P(i);
            temp = temp + kernelDistance(X(i,l), V(k,l), sigma(l));
         end;
-        W(j) = W(j) * temp;
+        W(j) = W(j) * ( temp ^ expoent );
     end;
 end;
 
-W = ( W .^ expoent ) ./ denominator;
+W = W ./ denominator;
 
 end
 

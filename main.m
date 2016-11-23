@@ -1,9 +1,12 @@
 clear
 clc
 load('abaloneNorm.mat');
+load('abalone.mat');
+
+labels = abalonediscrete(:,1);
 
 X = abaloneNorm(:,2:9);
-iterations = 3;
+iterations = 100;
 K = 3;
 [ n, p ] = size(X);
 
@@ -20,6 +23,7 @@ sigma = mean(sigmaDistances);
 bestV = zeros(K, p);
 bestJ = realmax;
 bestW = zeros(K, p);
+bestP = zeros(n, 1);
 bestIteration = 1;
 sortedJ = zeros(iterations, 1);
 
@@ -102,16 +106,30 @@ for it=1:iterations
         bestJ = J;
         bestV = V;
         bestW = W;
+        bestP = P;
         bestIteration = it;
     end;
 end;
 
 fprintf('\nMelhor Iteração : %d com custo %.3f\n', bestIteration, bestJ);
+fprintf('Prototipos :\n');
 for i=1:K
-    fprintf('Centro %d:\n', i);
+    fprintf('Prototipo %d:\n', i);
     fprintf('%.3f   ', bestV(i,:));
     fprintf('\n');
 end;
 fprintf('Pesos :\n');
 fprintf('%.3f   ', bestW);
 fprintf('\n');
+
+randInd = rand_index(P, labels, 'adjusted');
+
+fprintf('Ajudsted Rand Index = %.3f\n', randInd);
+
+fprintf('Partitions :\n');
+
+for i=1:K
+    fprintf('Partition %d\n', i);
+    fprintf('%d    ', find(bestP==i));
+    fprintf('\n');
+end;

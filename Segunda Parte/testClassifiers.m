@@ -54,12 +54,12 @@ for i=1:CVO.NumTestSets
     
     [ classificatedMajoritario, erros(i,4), ~ ] = ...
         Majoritario(estimatedClass, testClasses);
-    
+   
 end;
 
-intervaloConfiancaBayes = intervaloConfianca(erros(:,1), 0.5);
-intervaloConfiancaSVM = intervaloConfianca(erros(:,2), 0.5);
-intervalConfiancaMLP = intervaloConfianca(erros(:,3), 0.5);
-intervaloConfiancaMajoritario = intervaloConfianca(erros(:,4), 0.5);
+intervaloConfiancaBayes = intervaloConfianca(erros(:,1), 0.05, 'Bayes');
+intervaloConfiancaSVM = intervaloConfianca(erros(:,2), 0.05, 'SVM');
+intervalConfiancaMLP = intervaloConfianca(erros(:,3), 0.05, 'MLP');
+intervaloConfiancaMajoritario = intervaloConfianca(erros(:,4), 0.05, 'Voto Majoritário');
 
 F = friedman(erros, 1, 'off');

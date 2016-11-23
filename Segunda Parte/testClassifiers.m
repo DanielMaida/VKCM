@@ -5,12 +5,26 @@ load abalone.mat
 X = abalone(:,2:9);
 T = abalone(:,1);
 
+len = length(T);
+k = max(T);
+Te = zeros(len, k);
+
+for i=1:len
+    Te(i,T(i)) = 1;
+end;
+
+
 CVO = cvpartition(T, 'KFold', 10);
 
 % classificated = zeros(10, 4);
 erros = zeros(10, 4);
 
+fprintf('Pegando os parâmetros para MLP\n');
+params = getParamsMLP(X, Te);
+
+fprintf('Inicializando treinamento e testes dos classificadores com Cross Validation KFold\n');
 for i=1:CVO.NumTestSets
+    fprintf('Fold %d\n', i);
     teIndLogical = CVO.test(i);
     trIndLogical = CVO.training(i);
     
@@ -33,8 +47,8 @@ for i=1:CVO.NumTestSets
     [ classificatedSVM, erros(i,2) ] = ...
         svmClassificator(testData, testClasses, trainData, trainClasses);
     
-%     [ classificatedMLP, erros(i,3) ] = ...
-%         mlpClassificator(X, T, params, trIndMLP, valInd, teInd);
+    [ classificatedMLP, erros(i,3) ] = ...
+        mlpClassificator(X, Te, trIndMLP, valInd, teInd, params);
     
     estimatedClass = [ classificatedBayes, classificatedSVM ];
     
@@ -45,9 +59,7 @@ end;
 
 intervaloConfiancaBayes = intervaloConfianca(erros(:,1), 0.5);
 intervaloConfiancaSVM = intervaloConfianca(erros(:,2), 0.5);
-% intervalConfiancaMLP = intervaloConfianca(erros(:,3), 0.5);
+intervalConfiancaMLP = intervaloConfianca(erros(:,3), 0.5);
 intervaloConfiancaMajoritario = intervaloConfianca(erros(:,4), 0.5);
 
-erros = [ erros(:,1:2) erros(:,4) ];
-
-friedman(erros, 3);
+F = friedman(erros, 1, 'off');

@@ -1,31 +1,31 @@
-function [ classificated, erros ] = mlpClassificator( X, T, trInd, valInd, teInd, params )
+function [ classificated, erros, net ] = mlpClassificator( X, T, trInd, valInd, teInd, params )
 %MLPCLASSIFICATOR Summary of this function goes here
 %   Detailed explanation goes here
 
-learningRates = params.learningRate;
-hiddenNeurons = params.hiddenNeurons;
-maxEpochs = params.maxEpochs;
+learningRate = params.learningRate;
+hiddenNeuron = params.hiddenNeuron;
+maxEpoch = params.maxEpoch;
 
 [ ~, classLabels ] = max(T, [], 2);
 
-net = feedforwardnet(hiddenNeurons, 'traingd');
+net = feedforwardnet(hiddenNeuron, 'traingd');
 net.layers{1}.transferFcn = 'logsig';
-net.trainParam.lr = learningRates
-net.trainParam.epochs = maxEpochs
+net.trainParam.lr = learningRate;
+net.trainParam.epochs = maxEpoch;
 net.trainParam.showWindow = false;
 
 net.divideFcn = 'divideind';
-net.divideParam.trainInd = trainInd;
+net.divideParam.trainInd = trInd;
 net.divideParam.valInd = valInd;
 net.divideParam.testInd = [];
 
-[ net, ~ ] = train(net, X', Te');
+[ net, ~ ] = train(net, X', T');
 
-y = net(X(testInd,:)');
+y = net(X(teInd,:)');
 
 [ ~ , classificated ] = max(y, [], 1);
 
-erros = length(find(classificated' ~= classLabels(testInd))) / length(testInd);
+erros = length(find(classificated' ~= classLabels(teInd))) / length(teInd);
 
 end
 
